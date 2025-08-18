@@ -1,3 +1,4 @@
+version: "3.9"
 
 services:
   postgres:
@@ -9,7 +10,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U taskpass"]
+      test: ["CMD-SHELL", "pg_isready -U daniel"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -23,13 +24,13 @@ services:
       retries: 5
 
   web:
-    build: ../..
+    build: ..
     ports:
       - "8000:8000"
     environment:
       - DJANGO_SETTINGS_MODULE=taskverse.django.local
     volumes:
-      - ../..:/app
+      - ../:/app
     depends_on:
       postgres:
         condition: service_healthy
@@ -38,11 +39,11 @@ services:
     command: python manage.py runserver 0.0.0.0:8000
 
   worker:
-    build: ../..
+    build: ..
     environment:
       - DJANGO_SETTINGS_MODULE=taskverse.django.local
     volumes:
-      - ../..:/app
+      - ../:/app
     depends_on:
       postgres:
         condition: service_healthy
@@ -51,11 +52,11 @@ services:
     command: celery -A taskverse worker --loglevel=info
 
   beat:
-    build: ../..
+    build: ..
     environment:
       - DJANGO_SETTINGS_MODULE=taskverse.django.local
     volumes:
-      - ../..:/app
+      - ../:/app
     depends_on:
       postgres:
         condition: service_healthy
@@ -64,18 +65,17 @@ services:
     command: celery -A taskverse beat --loglevel=info
 
   flower:
-    build: ../..
+    build: ..
     ports:
       - "5555:5555"
     environment:
       - DJANGO_SETTINGS_MODULE=taskverse.django.local
     volumes:
-      - ../..:/app
+      - ../:/app
     depends_on:
       redis:
         condition: service_healthy
-    command: celery -A taskverse flower
+    command: celery -A taskverse flower --port=5555
 
 volumes:
   postgres_data:
-

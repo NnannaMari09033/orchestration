@@ -1,0 +1,12 @@
+Django==5.2.5
+celery==5.5.0
+redis==6.0.0
+flower==2.0.1
+psycopg2-binary==2.9.10
+graphene-django==3.2.3
+python-dotenv==1.1.1
+gunicorn==23.0.0
+django-extensions==3.2.3   # check PyPI for newer if available
+django-celery-beat==2.8.1
+django-celery-results==2.6.0
+djangorestframework==3.16.0

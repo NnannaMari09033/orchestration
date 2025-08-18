@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   postgres:
     image: postgres:15
@@ -8,7 +10,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U taskpass"]
+      test: ["CMD-SHELL", "pg_isready -U daniel"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -73,7 +75,7 @@ services:
     depends_on:
       redis:
         condition: service_healthy
-    command: celery -A taskverse flower
+    command: celery -A taskverse flower --port=5555
 
 volumes:
   postgres_data:

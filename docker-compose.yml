@@ -8,7 +8,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U taskpass"]
+      test: ["CMD-SHELL", "pg_isready -U daniel -d taskverse_db"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -26,7 +26,15 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DJANGO_SETTINGS_MODULE=taskverse.django.local
+      DJANGO_SETTINGS_MODULE: taskverse.django.local
+      SECRET_KEY: dev-insecure-secret-key
+      DB_NAME: taskverse_db
+      DB_USER: daniel
+      DB_PASSWORD: '@daniel09033'
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
     volumes:
       - .:/app
     depends_on:
@@ -39,7 +47,16 @@ services:
   worker:
     build: .
     environment:
-      - DJANGO_SETTINGS_MODULE=taskverse.django.local
+      DJANGO_SETTINGS_MODULE: taskverse.django.local
+      SECRET_KEY: dev-insecure-secret-key
+      DB_NAME: taskverse_db
+      DB_USER: daniel
+      DB_PASSWORD: '@daniel09033'
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+  SKIP_DJANGO_BOOTSTRAP: "1"
     volumes:
       - .:/app
     depends_on:
@@ -52,7 +69,16 @@ services:
   beat:
     build: .
     environment:
-      - DJANGO_SETTINGS_MODULE=taskverse.django.local
+      DJANGO_SETTINGS_MODULE: taskverse.django.local
+      SECRET_KEY: dev-insecure-secret-key
+      DB_NAME: taskverse_db
+      DB_USER: daniel
+      DB_PASSWORD: '@daniel09033'
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+  SKIP_DJANGO_BOOTSTRAP: "1"
     volumes:
       - .:/app
     depends_on:
@@ -67,7 +93,16 @@ services:
     ports:
       - "5555:5555"
     environment:
-      - DJANGO_SETTINGS_MODULE=taskverse.django.local
+      DJANGO_SETTINGS_MODULE: taskverse.django.local
+      SECRET_KEY: dev-insecure-secret-key
+      DB_NAME: taskverse_db
+      DB_USER: daniel
+      DB_PASSWORD: '@daniel09033'
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+  SKIP_DJANGO_BOOTSTRAP: "1"
     volumes:
       - .:/app
     depends_on:

@@ -21,7 +21,7 @@ env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool('DJANGO_DEBUG',default=True)
+DEBUG = env.bool('DJANGO_DEBUG', default=True)
 
 ALLOWED_HOSTS = ['*']
 
@@ -38,12 +38,13 @@ INSTALLED_APPS = [
     'graphene_django',
     'django_extensions',
     'rest_framework',
+    'rest_framework.authtoken',
     'django_celery_beat',
     'django_celery_results',
-    'apps.users',
-    'apps.tasks',
-    'apps.monitoring',
-    'apps.notifications',
+    'taskverse.apps.users',
+    'taskverse.apps.tasks',
+    'taskverse.apps.monitoring',
+    'taskverse.apps.notifications',
 ]
 
 MIDDLEWARE = [
@@ -86,16 +87,16 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('DB_NAME', 'taskverse_db'),
-        'USER': os.getenv('DB_USER', 'taskverse_user'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'your_secure_password'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'USER': os.getenv('DB_USER', 'daniel'),
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', 'postgres'),
         'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
 
 GRAPHENE = {
-    'SCHEMA': 'schema.schema',
+    'SCHEMA': 'taskverse.shema.schema',  # main GraphQL schema
     'MIDDLEWARE': [
         'graphene_django.debug.DjangoDebugMiddleware',
     ],
@@ -117,8 +118,8 @@ REST_FRAMEWORK = {
     ],
 }
 
-CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
-CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://redis:6379/0')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://redis:6379/0')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
@@ -164,3 +165,6 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # from taskverse.settings.celery import *
+
+# Custom user model
+AUTH_USER_MODEL = 'users.User'

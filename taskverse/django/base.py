@@ -96,7 +96,7 @@ DATABASES = {
 
 
 GRAPHENE = {
-    'SCHEMA': 'taskverse.shema.schema',  # main GraphQL schema
+    'SCHEMA': 'taskverse.schema.schema',  # main GraphQL schema
     'MIDDLEWARE': [
         'graphene_django.debug.DjangoDebugMiddleware',
     ],

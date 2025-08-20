@@ -96,7 +96,10 @@ DATABASES = {
 
 
 GRAPHENE = {
+ fix-dockerfile-location
+    'SCHEMA': 'taskverse.schema.schema',
     'SCHEMA': 'taskverse.schema.schema',  # main GraphQL schema
+main
     'MIDDLEWARE': [
         'graphene_django.debug.DjangoDebugMiddleware',
     ],

@@ -1,0 +1,154 @@
+services:
+  - type: web
+    name: taskverse-web
+    env: docker
+    dockerfilePath: ./Dockerfile.prod
+    dockerContext: .
+    plan: starter
+    healthCheckPath: /
+    preDeployCommand: "python manage.py migrate"
+    envVars:
+      - key: DATABASE_URL
+        fromService:
+          type: pserv
+          name: taskverse-postgres
+          property: connectionString
+      - key: CELERY_BROKER_URL
+        fromService:
+          type: pserv
+          name: taskverse-redis
+          property: connectionString
+      - key: CELERY_RESULT_BACKEND
+        fromService:
+          type: pserv
+          name: taskverse-redis
+          property: connectionString
+      - key: DJANGO_SETTINGS_MODULE
+        value: taskverse.django.production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        value: ${RENDER_EXTERNAL_HOSTNAME}
+      - key: SECURE_SSL_REDIRECT
+        value: "False"
+    autoDeploy: true
+
+  - type: pserv
+    name: taskverse-postgres
+    env: postgres
+    plan: free
+    postgres:
+      version: 15
+
+  - type: pserv
+    name: taskverse-redis
+    env: redis
+    plan: free
+
+  - type: worker
+    name: taskverse-worker
+    env: docker
+    dockerfilePath: ./Dockerfile.prod
+    dockerContext: .
+    plan: starter
+    command: celery -A taskverse worker --loglevel=info
+    envVars:
+      - key: DATABASE_URL
+        fromService:
+          type: pserv
+          name: taskverse-postgres
+          property: connectionString
+      - key: CELERY_BROKER_URL
+        fromService:
+          type: pserv
+          name: taskverse-redis
+          property: connectionString
+      - key: CELERY_RESULT_BACKEND
+        fromService:
+          type: pserv
+          name: taskverse-redis
+          property: connectionString
+      - key: DJANGO_SETTINGS_MODULE
+        value: taskverse.django.production
+      - key: SECRET_KEY
+        fromService:
+          type: web
+          name: taskverse-web
+          envVar: SECRET_KEY
+      - key: ALLOWED_HOSTS
+        fromService:
+          type: web
+          name: taskverse-web
+          envVar: ALLOWED_HOSTS
+
+  - type: worker
+    name: taskverse-beat
+    env: docker
+    dockerfilePath: ./Dockerfile.prod
+    dockerContext: .
+    plan: starter
+    command: celery -A taskverse beat --loglevel=info
+    envVars:
+      - key: DATABASE_URL
+        fromService:
+          type: pserv
+          name: taskverse-postgres
+          property: connectionString
+      - key: CELERY_BROKER_URL
+        fromService:
+          type: pserv
+          name: taskverse-redis
+          property: connectionString
+      - key: CELERY_RESULT_BACKEND
+        fromService:
+          type: pserv
+          name: taskverse-redis
+          property: connectionString
+      - key: DJANGO_SETTINGS_MODULE
+        value: taskverse.django.production
+      - key: SECRET_KEY
+        fromService:
+          type: web
+          name: taskverse-web
+          envVar: SECRET_KEY
+      - key: ALLOWED_HOSTS
+        fromService:
+          type: web
+          name: taskverse-web
+          envVar: ALLOWED_HOSTS
+
+databases:
+  - name: taskverse-db
+    plan: free
+
+previews:
+  - path: /
+    name: taskverse-preview
+    env: docker
+    dockerfilePath: ./Dockerfile.prod
+    dockerContext: .
+    healthCheckPath: /
+    envVars:
+      - key: DATABASE_URL
+        fromService:
+          type: pserv
+          name: taskverse-postgres
+          property: connectionString
+      - key: CELERY_BROKER_URL
+        fromService:
+          type: pserv
+          name: taskverse-redis
+          property: connectionString
+      - key: CELERY_RESULT_BACKEND
+        fromService:
+          type: pserv
+          name: taskverse-redis
+          property: connectionString
+      - key: DJANGO_SETTINGS_MODULE
+        value: taskverse.django.production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        value: ${RENDER_EXTERNAL_HOSTNAME}
+      - key: SECURE_SSL_REDIRECT
+        value: "False"

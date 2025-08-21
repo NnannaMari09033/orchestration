@@ -272,6 +272,28 @@ docker-compose -f docker-compose.prod.yml run --rm web /entrypoint.sh /bin/bash 
 ```
 Alternatively, you can set the `CREATE_SUPERUSER` environment variable to `1` in your `.env.prod` file to create a superuser automatically when the `web` service starts. You can also set the `DJANGO_SUPERUSER_EMAIL`, `DJANGO_SUPERUSER_FULL_NAME`, and `DJANGO_SUPERUSER_PASSWORD` environment variables to customize the superuser.
 
+## Deploying to Render
+
+This project is configured for deployment on [Render](https://render.com/) using a `render.yaml` file. Render will automatically build and deploy the services defined in this file when you push changes to your Git repository.
+
+### Setup
+
+1.  **Push to Git:** Make sure all your latest changes, including the `render.yaml` file, are committed and pushed to your GitHub, GitLab, or Bitbucket repository.
+
+2.  **Create a Blueprint on Render:**
+    *   Navigate to the [Render Dashboard](https://dashboard.render.com/) and click "New" -> "Blueprint".
+    *   Connect your Git repository.
+    *   Render will detect the `render.yaml` file and show you the services that will be created.
+
+3.  **Set Environment Variables:**
+    *   Render will automatically provision a PostgreSQL database and a Redis instance and inject their connection URLs into your services.
+    *   You will need to add a `SECRET_KEY` to your environment. You can do this by creating an "Environment Group" in Render and adding your `SECRET_KEY` there. Then, link this environment group to your `taskverse-web`, `taskverse-worker`, and `taskverse-beat` services. Alternatively, you can set the `SECRET_KEY` environment variable manually for each service in the Render dashboard.
+
+4.  **Deploy:**
+    *   Click "Create" to deploy your services. Render will build the Docker image, run migrations (as defined by the `preDeployCommand`), and start your web, worker, and beat services.
+
+Your application will be live at the URL provided by Render for the `taskverse-web` service.
+
 ## Production notes
 - Use `taskverse.django.production` and set `DJANGO_SETTINGS_MODULE` accordingly.
 - Replace `runserver` with Gunicorn/Uvicorn for WSGI/ASGI.

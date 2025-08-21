@@ -35,6 +35,8 @@ COPY --chown=app:app taskverse/settings/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 COPY --chown=app:app . .
 
+RUN chown -R app:app /home/app
+
 # Set user
 USER app
 

@@ -18,3 +18,5 @@ build/
 *.pkl
 *.pyd   
 
+__pycache__/
+*.pyc

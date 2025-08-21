@@ -251,6 +251,8 @@ Create a `.env.prod` file in the root of the project and add your production-spe
 - `DATABASE_URL`: The URL of your production PostgreSQL database.
 - `CELERY_BROKER_URL`: The URL of your production Redis instance.
 - `CELERY_RESULT_BACKEND`: The URL of your production Redis instance.
+- `FLOWER_USER`: The username for the Flower dashboard.
+- `FLOWER_PASSWORD`: The password for the Flower dashboard.
 
 ### Running in Production
 To build and run the application in production mode, use the `docker-compose.prod.yml` file:
@@ -287,12 +289,12 @@ This project is configured for deployment on [Render](https://render.com/) using
 
 3.  **Set Environment Variables:**
     *   Render will automatically provision a PostgreSQL database and a Redis instance and inject their connection URLs into your services.
-    *   You will need to add a `SECRET_KEY` to your environment. You can do this by creating an "Environment Group" in Render and adding your `SECRET_KEY` there. Then, link this environment group to your `taskverse-web`, `taskverse-worker`, and `taskverse-beat` services. Alternatively, you can set the `SECRET_KEY` environment variable manually for each service in the Render dashboard.
+    *   You will need to add secrets like `SECRET_KEY`, `FLOWER_USER`, and `FLOWER_PASSWORD` to your environment. The recommended way to do this is by creating an **Environment Group** in Render and adding your secrets there. You can then link this group to all your services (`taskverse-web`, `taskverse-worker`, `taskverse-beat`, and `taskverse-flower`).
 
 4.  **Deploy:**
-    *   Click "Create" to deploy your services. Render will build the Docker image, run migrations (as defined by the `preDeployCommand`), and start your web, worker, and beat services.
+    *   Click "Create" to deploy your services. Render will build the Docker image, run migrations (as defined by the `preDeployCommand`), and start your web, worker, beat, and flower services.
 
-Your application will be live at the URL provided by Render for the `taskverse-web` service.
+Your application will be live at the URL provided by Render for the `taskverse-web` service. The Flower dashboard will be available at the URL for the `taskverse-flower` service.
 
 ## Production notes
 - Use `taskverse.django.production` and set `DJANGO_SETTINGS_MODULE` accordingly.

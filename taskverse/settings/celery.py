@@ -1,10 +1,3 @@
-# from taskverse.env import env
-
-# CELERY_BROKER = env('CELERY_BROKER')
-
-# CELERY_RESULT_BACKEND='django_db'
-# CELERY_RESULT_EXTENDED=True
-
 from __future__ import absolute_import, unicode_literals
 import os
 from celery import Celery

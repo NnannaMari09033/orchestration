@@ -66,6 +66,7 @@ Celery configuration:
 ## Local development (Docker Compose)
 Prerequisites: Docker and Docker Compose.
 
+
 Start the full stack:
 ```bash
 docker compose up -d --build

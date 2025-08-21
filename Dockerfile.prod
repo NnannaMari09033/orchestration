@@ -1,0 +1,43 @@
+# syntax=docker/dockerfile:1
+# Build stage
+FROM python:3.11-slim AS builder
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libpq-dev gcc netcat-traditional && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install python dependencies
+COPY requirements.txt /app/
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
+
+# Final stage
+FROM python:3.11-slim
+
+# Create a non-root user
+RUN addgroup --system app && adduser --system --group app
+
+WORKDIR /home/app/web
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libpq-dev netcat-traditional && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy python dependencies from builder
+COPY --from=builder /app/wheels /wheels
+RUN pip install --no-cache /wheels/*
+
+# Copy entrypoint and application code
+COPY --chown=app:app taskverse/settings/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+COPY --chown=app:app . .
+
+# Set user
+USER app
+
+# Set entrypoint and default command
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "taskverse.wsgi"]

@@ -237,6 +237,41 @@ Configure periodic tasks via Django Admin (Periodic tasks section) once migratio
       └─ notifications/
 ```
 
+## Production Deployment
+This project includes a production-ready setup using Docker Compose.
+
+### Prerequisites
+- Docker and Docker Compose
+- A `.env.prod` file with your production configuration. You can use `.env.prod.example` as a template.
+
+### Configuration
+Create a `.env.prod` file in the root of the project and add your production-specific environment variables. At a minimum, you should set:
+- `SECRET_KEY`: A long, random string.
+- `ALLOWED_HOSTS`: A comma-separated list of your domain names (e.g., `example.com,www.example.com`).
+- `DATABASE_URL`: The URL of your production PostgreSQL database.
+- `CELERY_BROKER_URL`: The URL of your production Redis instance.
+- `CELERY_RESULT_BACKEND`: The URL of your production Redis instance.
+
+### Running in Production
+To build and run the application in production mode, use the `docker-compose.prod.yml` file:
+```bash
+docker-compose -f docker-compose.prod.yml up -d --build
+```
+
+### Running Migrations
+To run database migrations in your production environment, you can use the `web` service:
+```bash
+docker-compose -f docker-compose.prod.yml run --rm web /entrypoint.sh /bin/bash -c "python manage.py migrate"
+```
+Alternatively, you can set the `RUN_MIGRATIONS` environment variable to `1` in your `.env.prod` file to run migrations automatically when the `web` service starts.
+
+### Creating a Superuser
+To create a superuser in your production environment, you can use the `web` service:
+```bash
+docker-compose -f docker-compose.prod.yml run --rm web /entrypoint.sh /bin/bash -c "python manage.py createsuperuser"
+```
+Alternatively, you can set the `CREATE_SUPERUSER` environment variable to `1` in your `.env.prod` file to create a superuser automatically when the `web` service starts. You can also set the `DJANGO_SUPERUSER_EMAIL`, `DJANGO_SUPERUSER_FULL_NAME`, and `DJANGO_SUPERUSER_PASSWORD` environment variables to customize the superuser.
+
 ## Production notes
 - Use `taskverse.django.production` and set `DJANGO_SETTINGS_MODULE` accordingly.
 - Replace `runserver` with Gunicorn/Uvicorn for WSGI/ASGI.

@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - ./.env.prod
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U daniel -d taskverse_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.env.prod
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: gunicorn --bind 0.0.0.0:8000 taskverse.wsgi
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    env_file:
+      - ./.env.prod
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: celery -A taskverse worker --loglevel=info
+
+  beat:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    env_file:
+      - ./.env.prod
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: celery -A taskverse beat --loglevel=info
+
+volumes:
+  postgres_data:

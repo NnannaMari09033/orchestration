@@ -117,6 +117,47 @@ services:
           name: taskverse-web
           envVar: ALLOWED_HOSTS
 
+  - type: web
+    name: taskverse-flower
+    env: docker
+    dockerfilePath: ./Dockerfile.prod
+    dockerContext: .
+    plan: starter
+    healthCheckPath: /login
+    envVars:
+      - key: DATABASE_URL
+        fromService:
+          type: pserv
+          name: taskverse-postgres
+          property: connectionString
+      - key: CELERY_BROKER_URL
+        fromService:
+          type: pserv
+          name: taskverse-redis
+          property: connectionString
+      - key: CELERY_RESULT_BACKEND
+        fromService:
+          type: pserv
+          name: taskverse-redis
+          property: connectionString
+      - key: DJANGO_SETTINGS_MODULE
+        value: taskverse.django.production
+      - key: SECRET_KEY
+        fromService:
+          type: web
+          name: taskverse-web
+          envVar: SECRET_KEY
+      - key: ALLOWED_HOSTS
+        fromService:
+          type: web
+          name: taskverse-web
+          envVar: ALLOWED_HOSTS
+      - key: FLOWER_USER
+        generateValue: true
+      - key: FLOWER_PASSWORD
+        generateValue: true
+    command: celery -A taskverse flower --basic_auth=${FLOWER_USER}:${FLOWER_PASSWORD}
+
 databases:
   - name: taskverse-db
     plan: free

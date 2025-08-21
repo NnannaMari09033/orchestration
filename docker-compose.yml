@@ -1,5 +1,5 @@
 services:
-  postgres:
+  db:
     image: postgres:15
     environment:
       POSTGRES_DB: taskverse_db
@@ -8,7 +8,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U daniel -d taskverse_db"]
+      test: ["CMD-SHELL", "pg_isready -U taskpass"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -26,41 +26,25 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DJANGO_SETTINGS_MODULE: taskverse.django.local
-      SECRET_KEY: dev-insecure-secret-key
-      DB_NAME: taskverse_db
-      DB_USER: daniel
-      DB_PASSWORD: '@daniel09033'
-      DB_HOST: postgres
-      DB_PORT: "5432"
-      CELERY_BROKER_URL: redis://redis:6379/0
-      CELERY_RESULT_BACKEND: redis://redis:6379/0
+      - DJANGO_SETTINGS_MODULE=taskverse.django.production
+      - ALLOWED_HOSTS=*
     volumes:
       - .:/app
     depends_on:
-      postgres:
+      db:
         condition: service_healthy
       redis:
         condition: service_healthy
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn taskverse.wsgi:application --bind 0.0.0.0:8000
 
   worker:
     build: .
     environment:
-      DJANGO_SETTINGS_MODULE: taskverse.django.local
-      SECRET_KEY: dev-insecure-secret-key
-      DB_NAME: taskverse_db
-      DB_USER: daniel
-      DB_PASSWORD: '@daniel09033'
-      DB_HOST: postgres
-      DB_PORT: "5432"
-      CELERY_BROKER_URL: redis://redis:6379/0
-      CELERY_RESULT_BACKEND: redis://redis:6379/0
-      SKIP_DJANGO_BOOTSTRAP: "1"
+      - DJANGO_SETTINGS_MODULE=taskverse.django.production
     volumes:
       - .:/app
     depends_on:
-      postgres:
+      db:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -69,20 +53,11 @@ services:
   beat:
     build: .
     environment:
-      DJANGO_SETTINGS_MODULE: taskverse.django.local
-      SECRET_KEY: dev-insecure-secret-key
-      DB_NAME: taskverse_db
-      DB_USER: daniel
-      DB_PASSWORD: '@daniel09033'
-      DB_HOST: postgres
-      DB_PORT: "5432"
-      CELERY_BROKER_URL: redis://redis:6379/0
-      CELERY_RESULT_BACKEND: redis://redis:6379/0
-      SKIP_DJANGO_BOOTSTRAP: "1"
+      - DJANGO_SETTINGS_MODULE=taskverse.django.production
     volumes:
       - .:/app
     depends_on:
-      postgres:
+      db:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -93,16 +68,7 @@ services:
     ports:
       - "5555:5555"
     environment:
-      DJANGO_SETTINGS_MODULE: taskverse.django.local
-      SECRET_KEY: dev-insecure-secret-key
-      DB_NAME: taskverse_db
-      DB_USER: daniel
-      DB_PASSWORD: '@daniel09033'
-      DB_HOST: postgres
-      DB_PORT: "5432"
-      CELERY_BROKER_URL: redis://redis:6379/0
-      CELERY_RESULT_BACKEND: redis://redis:6379/0
-      SKIP_DJANGO_BOOTSTRAP: "1"
+      - DJANGO_SETTINGS_MODULE=taskverse.django.production
     volumes:
       - .:/app
     depends_on:

@@ -5,15 +5,13 @@ DEBUG = env.bool('DJANGO_DEBUG',default=False)
 
 ALLOWED_HOSTS =env.list ('ALLOWED_HOSTS', default=[])
 
-DEBUG = False
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('DB_NAME', 'taskverse_db'),
-        'USER': os.getenv('DB_USER', 'daniel'),
+        'USER': os.getenv('DB_USER', 'taskverse_user'),
         'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST', 'postgres'),
+        'HOST': os.getenv('DB_HOST', 'db'),
         'PORT': os.getenv('DB_PORT', '5432'),
     }
 }

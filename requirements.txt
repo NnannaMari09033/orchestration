@@ -10,4 +10,3 @@ django-extensions==3.2.3   # check PyPI for newer if available
 django-celery-beat==2.8.1
 django-celery-results==2.6.0
 djangorestframework==3.16.0
-django-environ==0.11.2

@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    libpq-dev gcc netcat-traditional && \
+    libpq-dev gcc && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first
@@ -17,6 +17,5 @@ COPY . /app/
 # Prevent Python buffering
 ENV PYTHONUNBUFFERED=1
 
-# Use entrypoint to wait for deps and run migrations; command overridden by compose
-ENTRYPOINT ["/bin/bash", "/app/taskverse/settings/entrypoint.sh"]
+# Default command (can be overridden in docker-compose)
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

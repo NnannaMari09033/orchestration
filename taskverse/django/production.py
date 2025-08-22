@@ -7,7 +7,7 @@ from taskverse.env import env
 DEBUG = env.bool("DJANGO_DEBUG", default=False)
 SECRET_KEY = env("SECRET_KEY")
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
-
+DEBUG = False
 # Database
 # ------------------------------------------------------------------------------
 DATABASES = {"default": env.db("DATABASE_URL")}

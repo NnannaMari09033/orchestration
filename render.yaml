@@ -6,7 +6,7 @@ services:
     dockerContext: .
     plan: starter
     healthCheckPath: /
-    preDeployCommand: "python manage.py migrate"
+    preDeployCommand: "python manage.py migrate --settings=taskverse.django.production"
     envVars:
       - key: DATABASE_URL
         fromService:

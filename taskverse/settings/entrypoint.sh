@@ -47,16 +47,6 @@ PYEOF
 fi
 
 if [ "${SKIP_DJANGO_BOOTSTRAP:-0}" != "1" ]; then
-  # --- DEBUGGING PERMISSIONS ---
-  echo "--- DEBUGGING PERMISSIONS ---"
-  echo "Current user: $(whoami)"
-  echo "Listing permissions for /home/app:"
-  ls -ld /home/app
-  echo "Listing permissions for /home/app/web:"
-  ls -ld /home/app/web
-  echo "--- END DEBUGGING ---"
-  # --- END DEBUGGING ---
-
   # Collect static files
   python manage.py collectstatic --noinput || true
 fi

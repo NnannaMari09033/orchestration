@@ -3,10 +3,8 @@ services:
     image: postgres:15
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: taskverse_db
-      POSTGRES_USER: daniel
-      POSTGRES_PASSWORD: '@daniel09033'
+    env_file:
+      - ./.env.prod
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U daniel -d taskverse_db"]
       interval: 10s
@@ -27,13 +25,8 @@ services:
       dockerfile: Dockerfile.prod
     ports:
       - "8000:8000"
-    environment:
-      DJANGO_SETTINGS_MODULE: taskverse.django.production
-      SECRET_KEY: "this-is-a-temporary-insecure-key-for-debugging"
-      ALLOWED_HOSTS: "localhost,127.0.0.1"
-      DATABASE_URL: "postgres://daniel:@daniel09033@postgres:5432/taskverse_db"
-      CELERY_BROKER_URL: "redis://redis:6379/0"
-      CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+    env_file:
+      - ./.env.prod
     depends_on:
       postgres:
         condition: service_healthy
@@ -45,12 +38,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.prod
-    environment:
-      DJANGO_SETTINGS_MODULE: taskverse.django.production
-      SECRET_KEY: "this-is-a-temporary-insecure-key-for-debugging"
-      DATABASE_URL: "postgres://daniel:@daniel09033@postgres:5432/taskverse_db"
-      CELERY_BROKER_URL: "redis://redis:6379/0"
-      CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+    env_file:
+      - ./.env.prod
     depends_on:
       postgres:
         condition: service_healthy
@@ -62,12 +51,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.prod
-    environment:
-      DJANGO_SETTINGS_MODULE: taskverse.django.production
-      SECRET_KEY: "this-is-a-temporary-insecure-key-for-debugging"
-      DATABASE_URL: "postgres://daniel:@daniel09033@postgres:5432/taskverse_db"
-      CELERY_BROKER_URL: "redis://redis:6379/0"
-      CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+    env_file:
+      - ./.env.prod
     depends_on:
       postgres:
         condition: service_healthy
@@ -81,20 +66,14 @@ services:
       dockerfile: Dockerfile.prod
     ports:
       - "5555:5555"
-    environment:
-      DJANGO_SETTINGS_MODULE: taskverse.django.production
-      SECRET_KEY: "this-is-a-temporary-insecure-key-for-debugging"
-      DATABASE_URL: "postgres://daniel:@daniel09033@postgres:5432/taskverse_db"
-      CELERY_BROKER_URL: "redis://redis:6379/0"
-      CELERY_RESULT_BACKEND: "redis://redis:6379/0"
-      FLOWER_USER: "admin"
-      FLOWER_PASSWORD: "changeme"
+    env_file:
+      - ./.env.prod
     volumes:
       - flower_data:/data
     depends_on:
       redis:
         condition: service_healthy
-    command: celery -A taskverse flower --basic_auth=$${FLOWER_USER}:$${FLOWER_PASSWORD} --persistent=True --db=/data/flower.db
+    command: celery -A taskverse flower --basic_auth=${FLOWER_USER}:${FLOWER_PASSWORD} --persistent=True --db=/data/flower.db
 
 volumes:
   postgres_data:

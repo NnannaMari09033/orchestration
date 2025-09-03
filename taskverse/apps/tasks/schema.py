@@ -4,7 +4,7 @@ from .models import Task, Project
 from django.contrib.auth import get_user_model
 from .tasks import send_task_notification
 
-# ← Add TaskType definition
+
 class ProjectType(DjangoObjectType):
     class Meta:
         model = Project

@@ -66,73 +66,73 @@ Celery configuration:
 ## Local development (Docker Compose)
 Prerequisites: Docker and Docker Compose.
 
+**Setup:**
 
-Start the full stack:
-```bash
-docker compose up -d --build
-```
+1.  **Environment Configuration:** This project uses a `.env` file for local configuration. To get started, copy the example file:
+    ```bash
+    cp .env.example .env
+    ```
+    The default values in `.env` are configured to work with the Docker Compose setup. You can customize them if needed.
 
-Check service status:
-```bash
-docker compose ps
-```
+2.  **Start the Stack:** Build and start all services in detached mode:
+    ```bash
+    docker compose up -d --build
+    ```
 
-Tail logs for a service (examples):
-```bash
-# Web (Django)
-docker compose logs --no-color -f web
-# Celery worker
-docker compose logs --no-color -f worker
-# Celery beat
-docker compose logs --no-color -f beat
-# Flower
-docker compose logs --no-color -f flower
-```
+**Common Commands:**
 
-Endpoints:
+-   **Check Service Status:**
+    ```bash
+    docker compose ps
+    ```
+-   **Tail Logs:**
+    ```bash
+    # Web (Django)
+    docker compose logs --no-color -f web
+    # Celery worker
+    docker compose logs --no-color -f worker
+    ```
+
+**Endpoints:**
 - Web (Django): http://localhost:8000/
 - Admin: http://localhost:8000/admin
 - GraphQL: http://localhost:8000/graphql
 - Flower: http://localhost:5555/
 
-Default superuser (created automatically by entrypoint):
-- Email: `admin@taskverse.com`
-- Password: `adminpassword`
+**Default Superuser:**
+A superuser is created automatically on the first run. The credentials are set in your `.env` file:
+- Email: `DJANGO_SUPERUSER_EMAIL` (default: `admin@taskverse.com`)
+- Password: `DJANGO_SUPERUSER_PASSWORD` (default: `adminpassword`)
 
-Note: The entrypoint script waits for Postgres and Redis, runs migrations, creates the superuser (if missing), and collects static files on the `web` service only.
+Note: The entrypoint script for the `web` service handles waiting for dependencies, running migrations, creating the superuser, and collecting static files.
 
 ## Configuration (environment variables)
-Django reads configuration with `django-environ` and from container env vars. Common variables:
-- `DJANGO_SETTINGS_MODULE`: defaults to `taskverse.django.local` in dev
-- `SECRET_KEY`: Django secret key
-- Database:
-  - `DB_NAME`
-  - `DB_USER`
-  - `DB_PASSWORD`
-  - `DB_HOST` (in Compose: `postgres`)
-  - `DB_PORT` (default `5432`)
-- Celery:
-  - `CELERY_BROKER_URL` (default `redis://redis:6379/0` in containers)
-  - `CELERY_RESULT_BACKEND` (default `redis://redis:6379/0`)
-- Optional:
-  - `DJANGO_DEBUG` (default `True` in local)
-  - `ALLOWED_HOSTS` (comma-separated for production)
-  - `SKIP_DJANGO_BOOTSTRAP` (set to `1` on worker/beat/flower to skip migrations/superuser/static)
+This project uses `django-environ` to manage settings, loading variables from a `.env` file at the project root and then from the environment. An example file, `.env.example`, is provided.
 
-You can also place a `.env` file at project root; it will be read by `taskverse/env.py`.
+**To set up your local environment:**
 
-Example `.env` (do not commit secrets):
-```env
-SECRET_KEY=replace-me
-DJANGO_DEBUG=True
-DB_NAME=taskverse_db
-DB_USER=taskverse_user
-DB_PASSWORD=strong-password
-DB_HOST=localhost
-DB_PORT=5432
-CELERY_BROKER_URL=redis://localhost:6379/0
-CELERY_RESULT_BACKEND=redis://localhost:6379/0
-```
+1.  Copy the example file:
+    ```bash
+    cp .env.example .env
+    ```
+2.  Edit the `.env` file to set your desired configuration.
+
+The following variables are available:
+
+-   `SECRET_KEY`: A secret key for a particular Django installation.
+-   `DJANGO_DEBUG`: Set to `True` for development, `False` for production.
+-   `ALLOWED_HOSTS`: A comma-separated list of strings representing the host/domain names that this Django site can serve.
+-   `DB_NAME`: The name of the database to use.
+-   `DB_USER`: The username to use when connecting to the database.
+-   `DB_PASSWORD`: The password to use when connecting to the database.
+-   `DB_HOST`: The host to use when connecting to the database.
+-   `DB_PORT`: The port to use when connecting to the database.
+-   `CELERY_BROKER_URL`: The URL of the Celery broker.
+-   `CELERY_RESULT_BACKEND`: The URL of the Celery result backend.
+-   `REDIS_HOST`: The hostname of the Redis server.
+-   `CREATE_SUPERUSER`: Set to `1` to create a superuser on startup.
+-   `DJANGO_SUPERUSER_EMAIL`: The email address for the superuser.
+-   `DJANGO_SUPERUSER_PASSWORD`: The password for the superuser.
 
 ## Database & migrations
 Apply migrations (web container runs these automatically on start):

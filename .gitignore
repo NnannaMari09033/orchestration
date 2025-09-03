@@ -1,26 +1,36 @@
+# Environments
 .env
 .venv
+venv/
+
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+# Databases
 *.db
 *.sqlite3
+
+# Logs
 *.log
+
+# Django
 *.egg
 *.egg-info/
 dist/
 build/
-*.DS_Store
+staticfiles/
+
+# Other
+.DS_Store
 *.coverage
-*.mypy_cache/     
+*.mypy_cache/
 *.pytest_cache/
 *.pkl
-*.pyd   
+celerybeat-schedule
+celerybeat.pid
 
-__pycache__/
-*.pyc
-venv/
-.venv/
-.env
+# Ignore all .env files except the example
 !.env.example

@@ -4,10 +4,10 @@ from taskverse.env import env
 
 # General
 # ------------------------------------------------------------------------------
-DEBUG = env.bool("DJANGO_DEBUG", default=False)
 SECRET_KEY = env("SECRET_KEY")
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
-DEBUG = False
+DEBUG = env.bool("DJANGO_DEBUG", default=False)
+
 # Database
 # ------------------------------------------------------------------------------
 DATABASES = {"default": env.db("DATABASE_URL")}
@@ -31,17 +31,6 @@ SECURE_HSTS_PRELOAD = True
 # ------------------------------------------------------------------------------
 CELERY_BROKER_URL = env("CELERY_BROKER_URL")
 CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND")
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
-    }
-}
 
 
 # Gunicorn

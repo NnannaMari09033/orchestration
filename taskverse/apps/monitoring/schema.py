@@ -22,17 +22,17 @@ class Query(graphene.ObjectType):
 
 class CreateMonitoringRecord(graphene.Mutation):
     class Arguments:
-        task_id = graphene.String(required=True)
+        service_name = graphene.String(required=True)
         status = graphene.String(required=True)
-        message = graphene.String(required=False)
+        details = graphene.String(required=False)
 
     record = graphene.Field(MonitoringRecordType)
 
-    def mutate(root, info, task_id, status, message=None):
+    def mutate(root, info, service_name, status, details=None):
         record = MonitoringRecord.objects.create(
-            task_id=task_id,
+            service_name=service_name,
             status=status,
-            message=message,
+            details=details,
         )
         return CreateMonitoringRecord(record=record)
 

@@ -21,16 +21,14 @@ if [ -n "${REDIS_HOST:-}" ]; then
 fi
 
 
-# Run migrations if specified
-if [ "${RUN_MIGRATIONS:-0}" = "1" ]; then
-  echo "Running migrations..."
+if [ "${SKIP_DJANGO_BOOTSTRAP:-0}" != "1" ]; then
+  # Run migrations
   python manage.py migrate --noinput
-fi
 
-# Create superuser if specified
-if [ "${CREATE_SUPERUSER:-0}" = "1" ]; then
-  echo "Creating superuser..."
-  python manage.py shell << PYEOF
+  # Create superuser if specified
+  if [ "${CREATE_SUPERUSER:-0}" = "1" ]; then
+    echo "Creating superuser..."
+    python manage.py shell << PYEOF
 from django.contrib.auth import get_user_model
 User = get_user_model()
 email = '${DJANGO_SUPERUSER_EMAIL:-admin@taskverse.com}'
@@ -44,9 +42,8 @@ if not User.objects.filter(email=email).exists():
 else:
     print('Superuser already exists')
 PYEOF
-fi
+  fi
 
-if [ "${SKIP_DJANGO_BOOTSTRAP:-0}" != "1" ]; then
   # Collect static files
   python manage.py collectstatic --noinput || true
 fi
